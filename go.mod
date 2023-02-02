@@ -3,9 +3,11 @@ module sinotif
 go 1.19
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/adjust/rmq/v5 v5.0.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/joho/godotenv v1.4.0
+	github.com/stretchr/testify v1.8.1
 	github.com/xuri/excelize/v2 v2.7.0
 	gorm.io/driver/postgres v1.4.6
 	gorm.io/gorm v1.24.3
@@ -25,7 +27,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	golang.org/x/crypto v0.5.0 // indirect

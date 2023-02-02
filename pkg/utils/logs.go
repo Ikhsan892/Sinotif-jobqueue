@@ -50,39 +50,39 @@ func (l *Log) NewLogger(prefix string, appName string) {
 
 func (l *Log) print(prefix string, appName string, msg ...any) {
 	l.NewLogger(prefix, appName)
-	l.log.Println(msg)
-	l.defaultLogger.Println(msg)
+	l.log.Println(msg...)
+	l.defaultLogger.Println(msg...)
 	l.file.Close()
 }
 
 func (l *Log) printf(prefix string, appName string, format string, msg ...any) {
 	l.NewLogger(prefix, appName)
-	l.log.Printf(format, msg)
-	l.defaultLogger.Printf(format, msg)
+	l.log.Printf(format, msg...)
+	l.defaultLogger.Printf(format, msg...)
 	l.file.Close()
 }
 
 func Debug(appName string, msg ...any) {
 	l := Log{}
-	l.print("DEBUG", appName, msg)
+	l.print("DEBUG", appName, msg...)
 }
 
 func Info(appName string, msg ...any) {
 	l := Log{}
-	l.print("INFO", appName, msg)
+	l.print("INFO", appName, msg...)
 }
 
 func Error(appName string, msg ...any) {
 	l := Log{}
-	l.print("ERROR", appName, msg)
+	l.print("ERROR", appName, msg...)
 }
 
 func Warn(appName string, msg ...any) {
 	l := Log{}
-	l.print("WARN", appName, msg)
+	l.print("WARN", appName, msg...)
 }
 
 func ErrorF(appName string, format string, v ...any) {
 	l := Log{}
-	l.printf("ERROR", appName, format, v)
+	l.printf("ERROR", appName, format, v...)
 }

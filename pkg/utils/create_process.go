@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-type JobQueueLog struct {
+type LogInfo struct {
 	gorm.Model
 	ProcessName    string `json:"process_name"`
 	ProcessPayload string `json:"process_payload"`
@@ -15,9 +15,24 @@ type JobQueueLog struct {
 	IssuedBy       uint   `json:"issued_by"`
 }
 
+type IJobQueueLog interface {
+	CreateJobQueueLog(data LogInfo)
+}
+
+type JobQueueLog struct {
+	db      *gorm.DB
+	payload *LogInfo
+}
+
+func NewJobQueueLog(db *gorm.DB) *JobQueueLog {
+	return &JobQueueLog{
+		db: db,
+	}
+}
+
 // CreateJobQueueLog create log process
-func CreateJobQueueLog(db *gorm.DB, data *JobQueueLog) {
-	tx := db.Begin()
+func (jobQueue *JobQueueLog) CreateJobQueueLog(data LogInfo) {
+	tx := jobQueue.db.Begin()
 	if errCreate := tx.Table(os.Getenv("TABLE_LOG")).Create(&data).Error; errCreate != nil {
 		Error("CREATE_TABLE_LOG_PROCESS", errCreate)
 		tx.Rollback()
@@ -27,8 +42,11 @@ func CreateJobQueueLog(db *gorm.DB, data *JobQueueLog) {
 }
 
 // UpdateJobQueueLog update log process
-func UpdateJobQueueLog(db *gorm.DB, data *JobQueueLog) {
-	if errUpdate := db.Table(os.Getenv("TABLE_LOG")).Where("id = ?", data.ID).Updates(&data).Error; errUpdate != nil {
+func (jobQueue *JobQueueLog) UpdateJobQueueLog(data LogInfo) {
+	tx := jobQueue.db.Begin()
+	if errUpdate := tx.Table(os.Getenv("TABLE_LOG")).Where("id = ?", data.ID).Updates(&data).Error; errUpdate != nil {
 		Error("CREATE_TABLE_LOG_PROCESS", errUpdate)
+		tx.Rollback()
 	}
+	tx.Commit()
 }

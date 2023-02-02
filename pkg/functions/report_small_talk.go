@@ -15,8 +15,8 @@ import (
 type ReportSmallTalk struct {
 	db          *gorm.DB
 	workerIndex int
-	logProcess  *utils.JobQueueLog
-	config      *configs.Config
+	//logProcess  *utils.JobQueueLog
+	config *configs.Config
 }
 
 var (
@@ -44,14 +44,14 @@ func NewReportSmalltalk(db *gorm.DB, workerIndex int, config *configs.Config) *R
 		db:          db,
 		config:      config,
 		workerIndex: workerIndex,
-		logProcess: &utils.JobQueueLog{
-			ProcessName:    processName,
-			ProcessPayload: "",
-			ProcessStatus:  "CREATED",
-			ProcessType:    utils.REPORT,
-			ProcessResult:  utils.FILE,
-			IssuedBy:       0,
-		},
+		//logProcess: &utils.JobQueueLog{
+		//	ProcessName:    processName,
+		//	ProcessPayload: "",
+		//	ProcessStatus:  "CREATED",
+		//	ProcessType:    utils.REPORT,
+		//	ProcessResult:  utils.FILE,
+		//	IssuedBy:       0,
+		//},
 	}
 }
 
@@ -89,13 +89,13 @@ func (reportSmallTalk *ReportSmallTalk) Consume(delivery rmq.Delivery) {
 	}
 
 	// create first log
-	reportSmallTalk.logProcess.ProcessPayload = delivery.Payload()
-	reportSmallTalk.logProcess.IssuedBy = payload.UserId
-	utils.CreateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
+	//reportSmallTalk.logProcess.ProcessPayload = delivery.Payload()
+	//reportSmallTalk.logProcess.IssuedBy = payload.UserId
+	//utils.CreateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
 
 	// start the process
-	reportSmallTalk.logProcess.ProcessStatus = "PROCESSING"
-	utils.UpdateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
+	//reportSmallTalk.logProcess.ProcessStatus = "PROCESSING"
+	//utils.UpdateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
 
 	// 1. fetch the data
 	var resultReportSmallTalk []ResultReportSmallTalk
@@ -114,9 +114,9 @@ func (reportSmallTalk *ReportSmallTalk) Consume(delivery rmq.Delivery) {
 		"FROM small_talks LEFT JOIN students on students.id = small_talks.student_id " +
 		"WHERE small_talks.deleted_at is null " +
 		fmt.Sprintf("%s", condition)).Scan(&resultReportSmallTalk).Error; errSelect != nil {
-		reportSmallTalk.logProcess.ProcessStatus = "FAILED"
-		reportSmallTalk.logProcess.ProcessPayload = errSelect.Error()
-		utils.UpdateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
+		//reportSmallTalk.logProcess.ProcessStatus = "FAILED"
+		//reportSmallTalk.logProcess.ProcessPayload = errSelect.Error()
+		//utils.UpdateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
 		errReject := delivery.Reject()
 		if errReject != nil {
 			utils.Error(processName, errReject)
@@ -185,9 +185,9 @@ func (reportSmallTalk *ReportSmallTalk) Consume(delivery rmq.Delivery) {
 	}
 
 	// 8. update status
-	reportSmallTalk.logProcess.ProcessStatus = "SUCCESS"
-	reportSmallTalk.logProcess.ProcessPayload = fmt.Sprintf("%s%d.xlsx", fileNamePrefix, randomInt)
-	utils.UpdateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
+	//reportSmallTalk.logProcess.ProcessStatus = "SUCCESS"
+	//reportSmallTalk.logProcess.ProcessPayload = fmt.Sprintf("%s%d.xlsx", fileNamePrefix, randomInt)
+	//utils.UpdateJobQueueLog(reportSmallTalk.db, reportSmallTalk.logProcess)
 
 	utils.Info(processName, fmt.Sprintf("File Success Generated,workerIndex : %d, path : %s", reportSmallTalk.workerIndex, fileName))
 

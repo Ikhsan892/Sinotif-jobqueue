@@ -5,4 +5,6 @@ const (
 	DATABASE = "DATABASE"
 	REPORT   = "REPORT"
 	FILE     = "FILE"
+
+	CREATED = "CREATED"
 )
